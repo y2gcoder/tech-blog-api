@@ -5,16 +5,21 @@ import java.util.Objects;
 import org.springframework.util.StringUtils;
 
 
-public class Tag {
+public final class Tag {
     private final TagId id;
 
     private final String name;
 
     public Tag(TagId id, String name) {
-        assert StringUtils.hasText(name);
-
+        if (!StringUtils.hasText(name)) {
+            throw new IllegalArgumentException("tag name doesn't have text");
+        }
         this.id = id;
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -38,7 +43,6 @@ public class Tag {
         private final Long value;
 
         public TagId(Long value) {
-            assert value > 0;
             this.value = value;
         }
 
