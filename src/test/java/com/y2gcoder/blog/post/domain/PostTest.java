@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.y2gcoder.blog.post.domain.Post.PostId;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +17,16 @@ class PostTest {
         //given
         String title = "";
         String content = "content";
-        LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 28, 17, 38, 30);
+        LocalDateTime writtenAt = LocalDateTime
+                .of(2022, 12, 28, 17, 38, 30);
+        PostingTags postingTags = new PostingTags(new ArrayList<>());
 
         //when
         //then
-        assertThatThrownBy(() -> Post.of(new PostId(1L), title, content, writtenAt))
-                .isInstanceOf(AssertionError.class);
+        assertThatThrownBy(
+                () -> Post.of(new PostId(1L), title, content, writtenAt, postingTags)
+        )
+                .isInstanceOf(IllegalArgumentException.class);
 
 
     }
@@ -32,12 +37,16 @@ class PostTest {
         //given
         String title = "title";
         String content = "";
-        LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 28, 17, 38, 30);
+        LocalDateTime writtenAt = LocalDateTime
+                .of(2022, 12, 28, 17, 38, 30);
+        PostingTags postingTags = new PostingTags(new ArrayList<>());
 
         //when
         //then
-        assertThatThrownBy(() -> Post.of(new PostId(1L), title, content, writtenAt))
-                .isInstanceOf(AssertionError.class);
+        assertThatThrownBy(
+                () -> Post.of(new PostId(1L), title, content, writtenAt, postingTags)
+        )
+                .isInstanceOf(IllegalArgumentException.class);
 
 
     }
@@ -48,8 +57,10 @@ class PostTest {
         //given
         String title = "title";
         String content = "content";
-        LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 28, 17, 38, 30);
-        Post post = Post.of(new PostId(1L), title, content, writtenAt);
+        LocalDateTime writtenAt = LocalDateTime
+                .of(2022, 12, 28, 17, 38, 30);
+        PostingTags postingTags = new PostingTags(new ArrayList<>());
+        Post post = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
 
         //when
         String newTitle = "newTitle";
@@ -67,8 +78,10 @@ class PostTest {
         //given
         String title = "title";
         String content = "content";
-        LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 28, 17, 38, 30);
-        Post post = Post.of(new PostId(1L), title, content, writtenAt);
+        LocalDateTime writtenAt = LocalDateTime
+                .of(2022, 12, 28, 17, 38, 30);
+        PostingTags postingTags = new PostingTags(new ArrayList<>());
+        Post post = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
 
         //when
         String newTitle = "";
@@ -86,8 +99,10 @@ class PostTest {
         //given
         String title = "title";
         String content = "content";
-        LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 28, 17, 38, 30);
-        Post post = Post.of(new PostId(1L), title, content, writtenAt);
+        LocalDateTime writtenAt = LocalDateTime
+                .of(2022, 12, 28, 17, 38, 30);
+        PostingTags postingTags = new PostingTags(new ArrayList<>());
+        Post post = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
 
         //when
         String newTitle = "newTitle";

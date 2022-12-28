@@ -11,12 +11,24 @@ public class Post {
     private String content;
 
     private LocalDateTime writtenAt;
+    private PostingTags postingTags;
 
-    private Post(PostId id, String title, String content, LocalDateTime writtenAt) {
+    private Post(PostId id, String title, String content, LocalDateTime writtenAt, PostingTags postingTags) {
+        if(!StringUtils.hasText(title)) {
+            throw new IllegalArgumentException("post title doesn't have text");
+        }
+        if (!StringUtils.hasText(content)) {
+            throw new IllegalArgumentException("post content doesn't have text");
+        }
+        if (writtenAt == null) {
+            throw new NullPointerException("post writtenAt is null");
+        }
+
         this.id = id;
-        changeTitle(title);
-        changeContent(content);
+        this.title = title;
+        this.content = content;
         this.writtenAt = writtenAt;
+        this.postingTags = postingTags;
     }
 
     public String getTitle() {
@@ -27,15 +39,22 @@ public class Post {
         return content;
     }
 
+    public LocalDateTime getWrittenAt() {
+        return writtenAt;
+    }
+
+    public PostingTags getPostingTags() {
+        return postingTags;
+    }
+
     public static Post of(
             PostId postId,
             String title,
             String content,
-            LocalDateTime writtenAt
+            LocalDateTime writtenAt,
+            PostingTags postingTags
     ) {
-        assert StringUtils.hasText(title);
-        assert StringUtils.hasText(content);
-        return new Post(postId, title, content, writtenAt);
+        return new Post(postId, title, content, writtenAt, postingTags);
     }
 
     public void edit(String title, String content) {
