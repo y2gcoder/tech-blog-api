@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PostingTags {
-    private List<Tag> tags;
+    private final List<Tag> tags;
 
     public PostingTags(List<Tag> tags) {
         if (tags == null) {
