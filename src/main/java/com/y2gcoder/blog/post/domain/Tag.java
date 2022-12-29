@@ -18,6 +18,10 @@ public final class Tag {
         this.name = name;
     }
 
+    public TagId getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -44,6 +48,10 @@ public final class Tag {
 
         public TagId(Long value) {
             this.value = value;
+        }
+
+        public Long getValue() {
+            return value;
         }
 
         @Override
