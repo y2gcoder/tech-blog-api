@@ -47,6 +47,10 @@ public class Post {
         return postingTags;
     }
 
+    public PostId getId() {
+        return id;
+    }
+
     public static Post of(
             PostId postId,
             String title,
@@ -81,6 +85,10 @@ public class Post {
         public PostId(Long value) {
             assert value > 0;
             this.value = value;
+        }
+
+        public Long getValue() {
+            return value;
         }
 
         @Override

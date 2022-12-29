@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface PostRepository {
 
-    void savePostWithTags(Post post, List<Tag> tags);
+    Long savePostWithTags(Post post, List<Tag> tags);
 
 }

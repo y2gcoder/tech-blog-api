@@ -17,7 +17,7 @@ public class PostRepositoryImpl implements PostRepository {
 
 
     @Override
-    public void savePostWithTags(Post post, List<Tag> tags) {
+    public Long savePostWithTags(Post post, List<Tag> tags) {
         PostJpaEntity postJpaEntity = postJpaRepository.save(
                 new PostJpaEntity(post.getTitle(), post.getContent(), post.getWrittenAt()));
         List<PostTagJpaEntity> postTagJpaEntities = tags.stream()
@@ -25,5 +25,7 @@ public class PostRepositoryImpl implements PostRepository {
                 .collect(
                         Collectors.toList());
         postTagJpaRepository.saveAll(postTagJpaEntities);
+
+        return postJpaEntity.getId();
     }
 }

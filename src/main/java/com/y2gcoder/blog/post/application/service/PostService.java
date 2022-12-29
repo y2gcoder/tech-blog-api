@@ -16,13 +16,13 @@ public class PostService {
 
     private final LocalDateTimeHolder localDateTimeHolder;
 
-    public void write(String title, String content, List<String> tagNames) {
+    public Long write(String title, String content, List<String> tagNames) {
         List<Tag> tags = tagNames.stream().map(tagName -> new Tag(null, tagName))
                 .collect(Collectors.toList());
         List<Tag> savedTags = tagRepository.saveAll(tags);
         Post post = Post
                 .of(null, title, content, localDateTimeHolder.now(), new PostingTags());
-        postRepository.savePostWithTags(post, savedTags);
+        return postRepository.savePostWithTags(post, savedTags);
     }
 
 }

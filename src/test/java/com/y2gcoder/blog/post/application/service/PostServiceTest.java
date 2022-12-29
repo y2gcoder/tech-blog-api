@@ -9,6 +9,7 @@ import com.y2gcoder.blog.post.infra.persistence.FakePostRepository;
 import com.y2gcoder.blog.post.infra.persistence.FakeTagRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,14 +19,12 @@ class PostServiceTest {
 
     private PostService sut;
     private PostRepository postRepository;
-    private TagRepository tagRepository;
-    private LocalDateTimeHolder localDateTimeHolder;
 
     @BeforeEach
     void beforeEach() {
         postRepository = new FakePostRepository();
-        tagRepository = new FakeTagRepository();
-        localDateTimeHolder = new TestLocalDateTimeHolder(
+        TagRepository tagRepository = new FakeTagRepository();
+        LocalDateTimeHolder localDateTimeHolder = new TestLocalDateTimeHolder(
                 LocalDateTime.of(2022, 12, 29, 13, 48, 26)
         );
         sut = new PostService(postRepository, tagRepository, localDateTimeHolder);
@@ -40,17 +39,17 @@ class PostServiceTest {
         List<String> tagNames = List.of("태그1", "태그2", "태그3");
 
         //when
-        sut.write(title, content, tagNames);
+        Long savedPostId = sut.write(title, content, tagNames);
 
         //then
         FakePostQueryRepository postQueryRepository = new FakePostQueryRepository(
                 ((FakePostRepository) postRepository).getStore());
-        List<Post> result = postQueryRepository.findAll();
+        Optional<Post> result = postQueryRepository.findById(savedPostId);
 
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getTitle()).isEqualTo(title);
-        assertThat(result.get(0).getPostingTags().getTags().size()).isEqualTo(3);
-        assertThat(result.get(0).getPostingTags().getTags().stream().map(Tag::getName).collect(
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getTitle()).isEqualTo(title);
+        assertThat(result.get().getPostingTags().getTags().size()).isEqualTo(3);
+        assertThat(result.get().getPostingTags().getTags().stream().map(Tag::getName).collect(
                 Collectors.toList())).containsAll(tagNames);
 
     }

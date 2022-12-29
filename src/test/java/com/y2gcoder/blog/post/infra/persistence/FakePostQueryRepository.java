@@ -4,6 +4,7 @@ import com.y2gcoder.blog.post.application.service.PostQueryRepository;
 import com.y2gcoder.blog.post.domain.Post;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.util.ObjectUtils;
 
 public class FakePostQueryRepository implements PostQueryRepository {
@@ -20,4 +21,15 @@ public class FakePostQueryRepository implements PostQueryRepository {
     public List<Post> findAll() {
         return Collections.unmodifiableList(store);
     }
+
+    @Override
+    public Optional<Post> findById(Long postId) {
+        for (Post post : store) {
+            if (post.getId().getValue().equals(postId)) {
+                return Optional.of(post);
+            }
+        }
+        return Optional.empty();
+    }
+
 }

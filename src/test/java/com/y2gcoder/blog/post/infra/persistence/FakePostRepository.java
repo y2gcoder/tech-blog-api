@@ -14,12 +14,13 @@ public class FakePostRepository implements PostRepository {
     private final List<Post> store = new ArrayList<>();
 
     @Override
-    public void savePostWithTags(Post post, List<Tag> tags) {
+    public Long savePostWithTags(Post post, List<Tag> tags) {
         Post newPost = Post.of(new PostId(incrementId++), post.getTitle(), post.getContent(),
                 post.getWrittenAt(),
                 new PostingTags(tags));
 
         store.add(newPost);
+        return newPost.getId().getValue();
     }
 
     public List<Post> getStore() {
