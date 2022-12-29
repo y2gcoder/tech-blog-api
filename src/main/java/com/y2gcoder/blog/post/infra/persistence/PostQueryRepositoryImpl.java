@@ -2,9 +2,11 @@ package com.y2gcoder.blog.post.infra.persistence;
 
 import com.y2gcoder.blog.post.application.service.PostQueryRepository;
 import com.y2gcoder.blog.post.domain.Post;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -20,13 +22,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     @Override
     public List<Post> findAll() {
         List<PostJpaEntity> postJpaEntities = postJpaRepository.findAll();
-
-        return postJpaEntities.stream().map(postJpaEntity -> {
-            List<Long> tagIdsByPostId = postTagJpaRepository.findTagIdsByPostId(
-                    postJpaEntity.getId());
-            List<TagJpaEntity> tagJpaEntities = tagJpaRepository.findAllByIdIn(tagIdsByPostId);
-            return postMapper.mapToDomainEntity(postJpaEntity, tagJpaEntities);
-        }).collect(Collectors.toList());
+        return postJpaEntities.stream().map(this::getPostDomainByPostJpaEntity).collect(Collectors.toList());
     }
 
     @Override
@@ -35,9 +31,25 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         if (optionalPostJpaEntity.isEmpty()) {
             return Optional.empty();
         }
+
         PostJpaEntity postJpaEntity = optionalPostJpaEntity.get();
-        List<Long> tagIdsByPostId = postTagJpaRepository.findTagIdsByPostId(postId);
-        List<TagJpaEntity> tagJpaEntities = tagJpaRepository.findAllByIdIn(tagIdsByPostId);
-        return Optional.of(postMapper.mapToDomainEntity(postJpaEntity, tagJpaEntities));
+        return Optional.of(getPostDomainByPostJpaEntity(postJpaEntity));
+    }
+
+    @Override
+    public Post getById(Long postId) {
+        PostJpaEntity postJpaEntity = postJpaRepository.findById(postId)
+                .orElseThrow(EntityNotFoundException::new);
+        return getPostDomainByPostJpaEntity(postJpaEntity);
+    }
+
+    private Post getPostDomainByPostJpaEntity(PostJpaEntity postJpaEntity) {
+        List<Long> tagIdsByPostId = postTagJpaRepository.findTagIdsByPostId(
+                postJpaEntity.getId());
+        List<TagJpaEntity> tagJpaEntities = new ArrayList<>();
+        if (!tagIdsByPostId.isEmpty()) {
+            tagJpaEntities = tagJpaRepository.findAllByIdIn(tagIdsByPostId);
+        }
+        return postMapper.mapToDomainEntity(postJpaEntity, tagJpaEntities);
     }
 }

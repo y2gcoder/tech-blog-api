@@ -5,6 +5,7 @@ import com.y2gcoder.blog.post.domain.Post;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import org.springframework.util.ObjectUtils;
 
 public class FakePostQueryRepository implements PostQueryRepository {
@@ -30,6 +31,16 @@ public class FakePostQueryRepository implements PostQueryRepository {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Post getById(Long postId) {
+        for (Post post : store) {
+            if (post.getId().getValue().equals(postId)) {
+                return post;
+            }
+        }
+        throw new EntityNotFoundException();    //TODO 이거 JPA에 맞춰서 했는데 다른 걸로 래핑이 필요한가? 나중에
     }
 
 }

@@ -9,4 +9,6 @@ public interface PostQueryRepository {
     List<Post> findAll();
 
     Optional<Post> findById(Long postId);
+
+    Post getById(Long postId);
 }
