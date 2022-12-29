@@ -6,12 +6,12 @@ import org.springframework.util.StringUtils;
 
 public class Post {
 
-    private PostId id;
+    private final PostId id;
     private String title;
     private String content;
 
-    private LocalDateTime writtenAt;
-    private PostingTags postingTags;
+    private final LocalDateTime writtenAt;
+    private final PostingTags postingTags;
 
     private Post(PostId id, String title, String content, LocalDateTime writtenAt, PostingTags postingTags) {
         if(!StringUtils.hasText(title)) {

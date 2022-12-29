@@ -60,16 +60,16 @@ class PostTest {
         LocalDateTime writtenAt = LocalDateTime
                 .of(2022, 12, 28, 17, 38, 30);
         PostingTags postingTags = new PostingTags(new ArrayList<>());
-        Post post = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
+        Post sut = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
 
         //when
         String newTitle = "newTitle";
         String newContent = "newContent";
-        post.edit(newTitle, newContent);
+        sut.edit(newTitle, newContent);
 
         //then
-        assertThat(post.getTitle()).isEqualTo(newTitle);
-        assertThat(post.getContent()).isEqualTo(newContent);
+        assertThat(sut.getTitle()).isEqualTo(newTitle);
+        assertThat(sut.getContent()).isEqualTo(newContent);
     }
 
     @Test
@@ -81,16 +81,16 @@ class PostTest {
         LocalDateTime writtenAt = LocalDateTime
                 .of(2022, 12, 28, 17, 38, 30);
         PostingTags postingTags = new PostingTags(new ArrayList<>());
-        Post post = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
+        Post sut = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
 
         //when
         String newTitle = "";
         String newContent = "newContent";
-        post.edit(newTitle, newContent);
+        sut.edit(newTitle, newContent);
 
         //then
-        assertThat(post.getTitle()).isEqualTo(title);
-        assertThat(post.getContent()).isEqualTo(newContent);
+        assertThat(sut.getTitle()).isEqualTo(title);
+        assertThat(sut.getContent()).isEqualTo(newContent);
     }
 
     @Test
@@ -102,16 +102,16 @@ class PostTest {
         LocalDateTime writtenAt = LocalDateTime
                 .of(2022, 12, 28, 17, 38, 30);
         PostingTags postingTags = new PostingTags(new ArrayList<>());
-        Post post = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
+        Post sut = Post.of(new PostId(1L), title, content, writtenAt, postingTags);
 
         //when
         String newTitle = "newTitle";
         String newContent = "";
-        post.edit(newTitle, newContent);
+        sut.edit(newTitle, newContent);
 
         //then
-        assertThat(post.getTitle()).isEqualTo(newTitle);
-        assertThat(post.getContent()).isEqualTo(content);
+        assertThat(sut.getTitle()).isEqualTo(newTitle);
+        assertThat(sut.getContent()).isEqualTo(content);
     }
 
 }
