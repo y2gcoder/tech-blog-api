@@ -17,6 +17,11 @@ public class PostService {
     private final LocalDateTimeHolder localDateTimeHolder;
 
     public Long write(String title, String content, List<String> tagNames) {
+        if (tagNames.isEmpty()) {
+            Post post = Post
+                    .of(null, title, content, localDateTimeHolder.now(), new PostingTags());
+            return postRepository.savePostWithoutTags(post);
+        }
         List<Tag> tags = tagNames.stream().map(tagName -> new Tag(null, tagName))
                 .collect(Collectors.toList());
         List<Tag> savedTags = tagRepository.saveAll(tags);

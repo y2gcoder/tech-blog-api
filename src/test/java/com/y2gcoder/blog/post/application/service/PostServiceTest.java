@@ -8,6 +8,7 @@ import com.y2gcoder.blog.post.infra.persistence.FakePostQueryRepository;
 import com.y2gcoder.blog.post.infra.persistence.FakePostRepository;
 import com.y2gcoder.blog.post.infra.persistence.FakeTagRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,6 +52,26 @@ class PostServiceTest {
         assertThat(result.get().getPostingTags().getTags().size()).isEqualTo(3);
         assertThat(result.get().getPostingTags().getTags().stream().map(Tag::getName).collect(
                 Collectors.toList())).containsAll(tagNames);
+    }
+
+    @Test
+    @DisplayName("태그가_없는_포스트를_작성할_수_있다.")
+    void givenNoTag_whenWrite_thenSuccess() {
+        //given
+        String title = "title";
+        String content = "content";
+
+        //when
+        Long savedPostId = sut.write(title, content, new ArrayList<>());
+
+        //then
+        FakePostQueryRepository postQueryRepository = new FakePostQueryRepository(
+                ((FakePostRepository) postRepository).getStore());
+        Optional<Post> result = postQueryRepository.findById(savedPostId);
+
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getTitle()).isEqualTo(title);
+        assertThat(result.get().getPostingTags().getTags().size()).isZero();
 
     }
 }
