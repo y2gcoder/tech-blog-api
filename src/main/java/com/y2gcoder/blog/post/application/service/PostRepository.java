@@ -8,4 +8,5 @@ public interface PostRepository {
 
     Long savePostWithTags(Post post, List<Tag> tags);
 
+    Long savePostWithoutTags(Post post);
 }

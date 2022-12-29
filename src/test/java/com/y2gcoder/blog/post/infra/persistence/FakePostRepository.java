@@ -23,6 +23,16 @@ public class FakePostRepository implements PostRepository {
         return newPost.getId().getValue();
     }
 
+    @Override
+    public Long savePostWithoutTags(Post post) {
+        Post newPost = Post.of(new PostId(incrementId++), post.getTitle(), post.getContent(),
+                post.getWrittenAt(),
+                new PostingTags(new ArrayList<>()));
+
+        store.add(newPost);
+        return newPost.getId().getValue();
+    }
+
     public List<Post> getStore() {
         return new ArrayList<>(store);
     }
