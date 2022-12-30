@@ -1,11 +1,18 @@
 package com.y2gcoder.blog.post.presentation;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.y2gcoder.blog.post.application.service.PostQueryService;
 import com.y2gcoder.blog.post.application.service.PostService;
+import com.y2gcoder.blog.post.domain.Post;
+import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostingTags;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +31,9 @@ import org.springframework.test.web.servlet.MockMvc;
 class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private PostQueryService postQueryService;
 
     @MockBean
     private PostService postService;
@@ -123,5 +133,38 @@ class PostControllerTest {
 
     }
 
+    @Test
+    @DisplayName("포스트_단일_검색에_성공한다.")
+    void givenPostId_whenGetPost_thenSuccess() throws Exception {
+        //given
+        Long postId = 1L;
+        String title = "title";
+        String content = "content";
+        LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 30, 17, 22, 17);
+        given(postQueryService.getByPostId(postId)).willReturn(
+                Post.of(new PostId(postId), title, content, writtenAt, new PostingTags()));
 
+        //when
+        mockMvc.perform(
+                        get("/posts/{postId}", postId)
+                )
+                .andExpect(status().isOk());
+
+        //then
+        then(postQueryService).should().getByPostId(postId);
+    }
+
+    @Test
+    @DisplayName("포스트_단일_검색할_때_포스트_ID에_다른_형식의_값을_입력하면_안된다.")
+    void givenPostIdNotLong_whenGetPost_thenThrowException() throws Exception {
+        //given
+        String postId = "blabber";
+
+        //when
+        //then
+        mockMvc.perform(
+                        get("/posts/{postId}", postId)
+                )
+                .andExpect(status().isBadRequest());
+    }
 }
