@@ -4,21 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class PostingTags {
     private final List<Tag> tags;
 
     public PostingTags(List<Tag> tags) {
         if (tags == null) {
-            throw new NullPointerException("tags is marked non-null but is null");
+            tags = new ArrayList<>();
         }
         this.tags = tags;
     }
 
     public PostingTags(Tag... tags) {
-        if (tags == null) {
-            throw new NullPointerException("tags is marked non-null but is null");
-        }
+        tags = Arrays.stream(tags).filter(Objects::nonNull).toArray(Tag[]::new);
         this.tags = new ArrayList<>(Arrays.asList(tags));
     }
 
