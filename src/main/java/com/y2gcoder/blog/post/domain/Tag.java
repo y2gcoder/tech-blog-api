@@ -1,6 +1,7 @@
 package com.y2gcoder.blog.post.domain;
 
 
+import com.y2gcoder.blog.common.domain.DomainId;
 import java.util.Objects;
 import org.springframework.util.StringUtils;
 
@@ -43,32 +44,10 @@ public final class Tag {
         return Objects.hash(id);
     }
 
-    public static class TagId {
-        private final Long value;
+    public static class TagId extends DomainId {
 
         public TagId(Long value) {
-            this.value = value;
-        }
-
-        public Long getValue() {
-            return value;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            TagId tagId = (TagId) o;
-            return value.equals(tagId.value);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(value);
+            super(value);
         }
     }
 

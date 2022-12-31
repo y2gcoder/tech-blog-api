@@ -1,5 +1,6 @@
 package com.y2gcoder.blog.post.domain;
 
+import com.y2gcoder.blog.common.domain.DomainId;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import org.springframework.util.StringUtils;
@@ -95,33 +96,10 @@ public class Post {
         return Objects.hash(id);
     }
 
-    public static class PostId {
-        private final Long value;
+    public static class PostId extends DomainId {
 
         public PostId(Long value) {
-            assert value > 0;
-            this.value = value;
-        }
-
-        public Long getValue() {
-            return value;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            PostId postId = (PostId) o;
-            return value.equals(postId.value);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(value);
+            super(value);
         }
     }
 
