@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface TagRepository {
 
-    List<Tag> saveAll(List<Tag> tags);
+    List<Tag> saveAll(List<String> tagNames);
 }

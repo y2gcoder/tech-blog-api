@@ -6,16 +6,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.y2gcoder.blog.post.application.service.PostQueryRepository;
-import com.y2gcoder.blog.post.application.service.PostRepository;
-import com.y2gcoder.blog.post.application.service.TagRepository;
-import com.y2gcoder.blog.post.domain.Post;
-import com.y2gcoder.blog.post.domain.PostingTags;
-import com.y2gcoder.blog.post.domain.Tag;
-import java.time.LocalDateTime;
+import com.y2gcoder.blog.post.application.service.PostQueryService;
+import com.y2gcoder.blog.post.application.service.PostService;
+import com.y2gcoder.blog.post.domain.PostWithTags;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -33,50 +30,54 @@ public class GetPostE2ETest {
     private MockMvc mockMvc;
 
     @Autowired
-    private TagRepository tagRepository;
+    private PostService postService;
 
     @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private PostQueryRepository postQueryRepository;
+    private PostQueryService postQueryService;
 
-    Post post;
-
+    private List<Long> savedPostIds = new ArrayList<>();
     private ObjectMapper objectMapper;
+
+
 
     @BeforeEach
     void beforeEach() {
-        List<Tag> tags = tagRepository.saveAll(IntStream.range(1, 5).mapToObj(i -> new Tag(null, "tag " + i))
-                .collect(Collectors.toList()));
-        LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 30, 19, 1, 3);
+        for (int i = 1; i < 4; i++) {
+            String title = "title "+i;
+            String content = "content "+i;
+            List<String> tagNames = IntStream.range(1 + (3 * (i - 1)), 4 + (3 * (i - 1))).mapToObj(v -> "tag " + v)
+                    .collect(Collectors.toList());
+            Long savedPostId = postService.write(title, content, tagNames);
+            savedPostIds.add(savedPostId);
+        }
 
-        Long savedPostId = postRepository.savePostWithTags(
-                Post.of(null, "title", "content", writtenAt, new PostingTags(tags)), tags);
-        post = postQueryRepository.getById(savedPostId);
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
     @Transactional
     @Test
     @DisplayName("E2E: 포스트_ID로_해당_포스트를_조회할_수_있다.")
-    void givenSavedPostId_whenGetPost_thenThatPost() throws Exception {
+    void givenSavedPostId_whenGetPost_thenGetThatPost() throws Exception {
         //given
-        Long postId = post.getId().getValue();
+        Long postId = savedPostIds.get(2);
 
         //when
-        ResultActions resultActions = mockMvc.perform(
-                get("/posts/{postId}", postId)
-        );
+        ResultActions resultActions = mockMvc.perform(get("/posts/{postId}", postId));
 
         //then
         resultActions.andExpect(status().isOk());
         PostResponse response = objectMapper.readValue(
                 resultActions.andReturn().getResponse().getContentAsString(),
                 PostResponse.class);
-        assertThat(response.getPostId()).isEqualTo(postId);
-        assertThat(response.getTitle()).isEqualTo(post.getTitle());
-        assertThat(response.getTags().size()).isEqualTo(post.getPostingTags().getTags().size());
-        assertThat(response.getWrittenAt()).isEqualTo(post.getWrittenAt());
+        assertThat(response.getPostId()).isEqualTo(response.getPostId());
+
+        PostWithTags postWithTags = postQueryService.getByPostId(postId);
+        assertThat(response.getTitle()).isEqualTo(postWithTags.getTitle());
+        assertThat(response.getWrittenAt()).isEqualToIgnoringNanos(postWithTags.getWrittenAt());
+        assertThat(response.getTags().stream().map(TagDto::getTagId).collect(Collectors.toList()))
+                .containsAll(
+                        postWithTags.getTags().stream().map(tag -> tag.getId().getValue()).collect(
+                                Collectors.toList()));
     }
 
 }

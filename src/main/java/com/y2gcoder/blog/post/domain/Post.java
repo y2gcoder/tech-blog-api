@@ -12,9 +12,8 @@ public class Post {
     private String content;
 
     private final LocalDateTime writtenAt;
-    private final PostingTags postingTags;
 
-    private Post(PostId id, String title, String content, LocalDateTime writtenAt, PostingTags postingTags) {
+    private Post(PostId id, String title, String content, LocalDateTime writtenAt) {
         if(!StringUtils.hasText(title)) {
             throw new IllegalArgumentException("post title doesn't have text");
         }
@@ -29,7 +28,6 @@ public class Post {
         this.title = title;
         this.content = content;
         this.writtenAt = writtenAt;
-        this.postingTags = postingTags;
     }
 
     public String getTitle() {
@@ -44,10 +42,6 @@ public class Post {
         return writtenAt;
     }
 
-    public PostingTags getPostingTags() {
-        return postingTags;
-    }
-
     public PostId getId() {
         return id;
     }
@@ -56,10 +50,9 @@ public class Post {
             PostId postId,
             String title,
             String content,
-            LocalDateTime writtenAt,
-            PostingTags postingTags
+            LocalDateTime writtenAt
     ) {
-        return new Post(postId, title, content, writtenAt, postingTags);
+        return new Post(postId, title, content, writtenAt);
     }
 
     public void edit(String title, String content) {

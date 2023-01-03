@@ -6,10 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.y2gcoder.blog.post.application.service.PostQueryRepository;
-import com.y2gcoder.blog.post.domain.Post;
+import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostWithTags;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @AutoConfigureMockMvc
@@ -38,6 +41,7 @@ class WritePostE2ETest {
         objectMapper = new ObjectMapper();
     }
 
+
     @Transactional
     @Test
     @DisplayName("E2E: 포스트_글쓰기를_할_수_있다.")
@@ -51,7 +55,7 @@ class WritePostE2ETest {
         String requestJson = objectMapper.writeValueAsString(postWriteRequest);
 
         //when
-        mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                         post("/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson)
@@ -59,10 +63,13 @@ class WritePostE2ETest {
                 .andExpect(status().isCreated());
 
         //then
-        List<Post> result = postQueryRepository.findAll();
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getTitle()).isEqualTo(title);
-        assertThat(result.get(0).getPostingTags().getTags().size()).isEqualTo(5);
+        String locationHeader = resultActions.andReturn().getResponse().getHeader("Location");
+        Long savedPostId = Long.valueOf(locationHeader.replace("/posts/", ""));
+        Optional<PostWithTags> optionalPostWithTags = postQueryRepository.findById(new PostId(savedPostId));
+        assertThat(optionalPostWithTags.isPresent()).isTrue();
+        PostWithTags postWithTags = optionalPostWithTags.get();
+        assertThat(postWithTags.getTitle()).isEqualTo(title);
+        assertThat(postWithTags.getTags().size()).isEqualTo(5);
     }
 
     @Transactional
@@ -80,7 +87,7 @@ class WritePostE2ETest {
         String requestJson = objectMapper.writeValueAsString(postWriteRequest);
 
         //when
-        mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                         post("/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson)
@@ -88,10 +95,13 @@ class WritePostE2ETest {
                 .andExpect(status().isCreated());
 
         //then
-        List<Post> result = postQueryRepository.findAll();
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getTitle()).isEqualTo(title);
-        assertThat(result.get(0).getPostingTags().getTags().size()).isEqualTo(0);
+        String locationHeader = resultActions.andReturn().getResponse().getHeader("Location");
+        Long savedPostId = Long.valueOf(locationHeader.replace("/posts/", ""));
+        Optional<PostWithTags> optionalPostWithTags = postQueryRepository.findById(new PostId(savedPostId));
+        assertThat(optionalPostWithTags.isPresent()).isTrue();
+        PostWithTags postWithTags = optionalPostWithTags.get();
+        assertThat(postWithTags.getTitle()).isEqualTo(title);
+        assertThat(postWithTags.getTags().size()).isEqualTo(0);
 
     }
 }

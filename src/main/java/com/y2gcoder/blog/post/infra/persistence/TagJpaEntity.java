@@ -1,7 +1,5 @@
 package com.y2gcoder.blog.post.infra.persistence;
 
-import com.y2gcoder.blog.post.domain.Tag;
-import com.y2gcoder.blog.post.domain.Tag.TagId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +24,4 @@ public class TagJpaEntity {
         this.name = name;
     }
 
-    public Tag toDomain() {
-        return new Tag(new TagId(id), this.name);
-    }
 }

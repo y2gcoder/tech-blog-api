@@ -12,12 +12,15 @@ import org.springframework.stereotype.Repository;
 public class TagRepositoryImpl implements TagRepository {
 
     private final TagJpaRepository tagJpaRepository;
+    private final TagMapper tagMapper;
+
     @Override
-    public List<Tag> saveAll(List<Tag> tags) {
-        List<TagJpaEntity> entities = tags.stream().map(d -> new TagJpaEntity(d.getName()))
-                .collect(Collectors.toList());
-        return tagJpaRepository.saveAll(entities)
-                .stream().map(TagJpaEntity::toDomain)
-                .collect(Collectors.toList());
+    public List<Tag> saveAll(List<String> tagNames) {
+        List<TagJpaEntity> tagJpaEntities = tagJpaRepository.saveAll(
+                tagNames.stream().map(TagJpaEntity::new).collect(Collectors.toList()));
+        return tagJpaEntities.stream()
+                .map(tagMapper::mapToDomainEntity).collect(
+                        Collectors.toList());
     }
+
 }

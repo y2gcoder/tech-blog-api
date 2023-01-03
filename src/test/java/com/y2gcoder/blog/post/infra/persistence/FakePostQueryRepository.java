@@ -2,45 +2,63 @@ package com.y2gcoder.blog.post.infra.persistence;
 
 import com.y2gcoder.blog.post.application.service.PostQueryRepository;
 import com.y2gcoder.blog.post.domain.Post;
-import java.util.Collections;
+import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostWithTags;
+import com.y2gcoder.blog.post.domain.Tag;
+import com.y2gcoder.blog.post.domain.Tagger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
-import org.springframework.util.ObjectUtils;
 
 public class FakePostQueryRepository implements PostQueryRepository {
-    private final List<Post> store;
+    private final List<Post> postStore;
+    private final List<Tagger> taggerStore;
 
-    public FakePostQueryRepository(List<Post> store) {
-        if (ObjectUtils.isEmpty(store)) {
-            throw new NullPointerException("store should not be null");
+    public FakePostQueryRepository(List<Post> postStore,
+            List<Tagger> taggerStore) {
+        this.postStore = postStore;
+        this.taggerStore = taggerStore;
+    }
+
+    @Override
+    public Optional<PostWithTags> findById(PostId postId) {
+        Optional<Post> optionalPost = findPostByPostId(postId);
+        if (optionalPost.isEmpty()) {
+            return Optional.empty();
         }
-        this.store = store;
+        List<Tag> tags = getTagsByPostId(postId);
+        Post post = optionalPost.get();
+        return Optional.of(new PostWithTags(post.getId(), post.getTitle(), post.getContent(),
+                post.getWrittenAt(),
+                tags));
     }
 
     @Override
-    public List<Post> findAll() {
-        return Collections.unmodifiableList(store);
+    public PostWithTags getById(PostId postId) {
+        Post post = findPostByPostId(postId).orElseThrow(EntityNotFoundException::new);
+        List<Tag> tags = getTagsByPostId(postId);
+        return new PostWithTags(post.getId(), post.getTitle(), post.getContent(),
+                post.getWrittenAt(),
+                tags);
     }
 
-    @Override
-    public Optional<Post> findById(Long postId) {
-        for (Post post : store) {
-            if (post.getId().getValue().equals(postId)) {
+    private Optional<Post> findPostByPostId(PostId postId) {
+        for (Post post : postStore) {
+            if (post.getId().equals(postId)) {
                 return Optional.of(post);
             }
         }
         return Optional.empty();
     }
 
-    @Override
-    public Post getById(Long postId) {
-        for (Post post : store) {
-            if (post.getId().getValue().equals(postId)) {
-                return post;
+    private List<Tag> getTagsByPostId(PostId postId) {
+        for (Tagger tagger : taggerStore) {
+            if (tagger.getPostId().equals(postId)) {
+                return tagger.getTags();
             }
         }
-        throw new EntityNotFoundException();    //TODO 이거 JPA에 맞춰서 했는데 다른 걸로 래핑이 필요한가? 나중에
+        return new ArrayList<>();
     }
 
 }

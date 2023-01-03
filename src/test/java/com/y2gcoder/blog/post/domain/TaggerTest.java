@@ -20,7 +20,7 @@ class TaggerTest {
         //given
         Tag tag1 = new Tag(new TagId(1L), "tag1");
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
-        Post post = Post.of(new PostId(1L), "title", "content", writtenAt, new PostingTags());
+        Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
 
         //when
         Tagger sut = new Tagger(new TaggerId(1L), post.getId(), new ArrayList<>());
@@ -39,7 +39,7 @@ class TaggerTest {
             tags.add(new Tag(new TagId((long) i), "tag " + i));
         }
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
-        Post post = Post.of(new PostId(1L), "title", "content", writtenAt, new PostingTags());
+        Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
         Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
 
         //when
@@ -58,7 +58,7 @@ class TaggerTest {
         List<Tag> tags = new ArrayList<>();
         tags.add(new Tag(new TagId(1L), "tag 1"));
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
-        Post post = Post.of(new PostId(1L), "title", "content", writtenAt, new PostingTags());
+        Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
         Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
 
         //when
@@ -82,7 +82,7 @@ class TaggerTest {
             tags.add(new Tag(new TagId((long) i), "tag " + i));
         }
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
-        Post post = Post.of(new PostId(1L), "title", "content", writtenAt, new PostingTags());
+        Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
         Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
 
         //when

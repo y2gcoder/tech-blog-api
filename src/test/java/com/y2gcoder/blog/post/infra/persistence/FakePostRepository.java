@@ -3,8 +3,7 @@ package com.y2gcoder.blog.post.infra.persistence;
 import com.y2gcoder.blog.post.application.service.PostRepository;
 import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Post.PostId;
-import com.y2gcoder.blog.post.domain.PostingTags;
-import com.y2gcoder.blog.post.domain.Tag;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,23 +13,10 @@ public class FakePostRepository implements PostRepository {
     private final List<Post> store = new ArrayList<>();
 
     @Override
-    public Long savePostWithTags(Post post, List<Tag> tags) {
-        Post newPost = Post.of(new PostId(incrementId++), post.getTitle(), post.getContent(),
-                post.getWrittenAt(),
-                new PostingTags(tags));
-
-        store.add(newPost);
-        return newPost.getId().getValue();
-    }
-
-    @Override
-    public Long savePostWithoutTags(Post post) {
-        Post newPost = Post.of(new PostId(incrementId++), post.getTitle(), post.getContent(),
-                post.getWrittenAt(),
-                new PostingTags(new ArrayList<>()));
-
-        store.add(newPost);
-        return newPost.getId().getValue();
+    public Post savePost(String title, String content, LocalDateTime writtenAt) {
+        Post post = Post.of(new PostId(incrementId++), title, content, writtenAt);
+        store.add(post);
+        return post;
     }
 
     public List<Post> getStore() {

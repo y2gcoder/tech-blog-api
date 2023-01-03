@@ -14,11 +14,14 @@ public class FakeTagRepository implements TagRepository {
     private final List<Tag> store = new ArrayList<>();
 
     @Override
-    public List<Tag> saveAll(List<Tag> tags) {
-        List<Tag> tagsWithId = tags.stream()
-                .map(tag -> new Tag(new TagId(incrementId++), tag.getName()))
+    public List<Tag> saveAll(List<String> tagNames) {
+        List<Tag> tags = tagNames.stream().map(s -> new Tag(new TagId(incrementId++), s))
                 .collect(Collectors.toList());
-        store.addAll(tagsWithId);
-        return Collections.unmodifiableList(tagsWithId);
+        store.addAll(tags);
+        return Collections.unmodifiableList(tags);
+    }
+
+    public List<Tag> getStore() {
+        return store;
     }
 }

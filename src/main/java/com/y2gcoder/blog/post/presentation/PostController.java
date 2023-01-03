@@ -2,7 +2,7 @@ package com.y2gcoder.blog.post.presentation;
 
 import com.y2gcoder.blog.post.application.service.PostQueryService;
 import com.y2gcoder.blog.post.application.service.PostService;
-import com.y2gcoder.blog.post.domain.Post;
+import com.y2gcoder.blog.post.domain.PostWithTags;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,13 +35,13 @@ public class PostController {
 
     @GetMapping("/{postId}")
     ResponseEntity<PostResponse> getPost(@PathVariable Long postId) {
-        Post post = postQueryService.getByPostId(postId);
+        PostWithTags postWithTags = postQueryService.getByPostId(postId);
         PostResponse postResponse = new PostResponse(
-                post.getId().getValue(),
-                post.getTitle(),
-                post.getContent(),
-                post.getWrittenAt(),
-                post.getPostingTags().getTags().stream()
+                postWithTags.getId().getValue(),
+                postWithTags.getTitle(),
+                postWithTags.getContent(),
+                postWithTags.getWrittenAt(),
+                postWithTags.getTags().stream()
                         .map(domain -> new TagDto(domain.getId().getValue(),
                                 domain.getName())).collect(Collectors.toList())
         );

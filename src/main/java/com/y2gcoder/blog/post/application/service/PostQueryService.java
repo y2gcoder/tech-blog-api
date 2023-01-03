@@ -1,6 +1,7 @@
 package com.y2gcoder.blog.post.application.service;
 
-import com.y2gcoder.blog.post.domain.Post;
+import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostWithTags;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ public class PostQueryService {
 
     private final PostQueryRepository postQueryRepository;
 
-    public Post getByPostId(Long postId) {
-        return postQueryRepository.getById(postId);
+    public PostWithTags getByPostId(Long postId) {
+        return postQueryRepository.getById(new PostId(postId));
     }
 }

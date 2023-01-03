@@ -2,16 +2,15 @@ package com.y2gcoder.blog.post.presentation;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.y2gcoder.blog.post.application.service.PostQueryService;
 import com.y2gcoder.blog.post.application.service.PostService;
-import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Post.PostId;
-import com.y2gcoder.blog.post.domain.PostingTags;
+import com.y2gcoder.blog.post.domain.PostWithTags;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,14 +140,19 @@ class PostControllerTest {
         String title = "title";
         String content = "content";
         LocalDateTime writtenAt = LocalDateTime.of(2022, 12, 30, 17, 22, 17);
-        given(postQueryService.getByPostId(postId)).willReturn(
-                Post.of(new PostId(postId), title, content, writtenAt, new PostingTags()));
+        given(postQueryService.getByPostId(postId))
+                .willReturn(new PostWithTags(
+                        new PostId(postId),
+                        title,
+                        content,
+                        writtenAt,
+                        new ArrayList<>()
+                ));
 
         //when
         mockMvc.perform(
-                        get("/posts/{postId}", postId)
-                )
-                .andExpect(status().isOk());
+                get("/posts/{postId}", postId)
+        ).andExpect(status().isOk());
 
         //then
         then(postQueryService).should().getByPostId(postId);
@@ -167,4 +171,5 @@ class PostControllerTest {
                 )
                 .andExpect(status().isBadRequest());
     }
+
 }

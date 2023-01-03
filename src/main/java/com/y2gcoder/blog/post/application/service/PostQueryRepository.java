@@ -1,14 +1,12 @@
 package com.y2gcoder.blog.post.application.service;
 
-import com.y2gcoder.blog.post.domain.Post;
-import java.util.List;
+import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostWithTags;
 import java.util.Optional;
 
 public interface PostQueryRepository {
 
-    List<Post> findAll();
+    Optional<PostWithTags> findById(PostId postId);
 
-    Optional<Post> findById(Long postId);
-
-    Post getById(Long postId);
+    PostWithTags getById(PostId postId);
 }
