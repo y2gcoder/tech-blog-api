@@ -92,5 +92,25 @@ class TaggerTest {
 
     }
 
+    @Test
+    @DisplayName("이미_있는_태그를_중복으로_추가하지_않는다.")
+    void givenTagAlreadyInThePost_whenAddTag_thenNotAdded() {
+        //given
+        List<Tag> tags = new ArrayList<>();
+        for (int i = 1; i < 11; i++) {
+            tags.add(new Tag(new TagId((long) i), "tag " + i));
+        }
+        LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
+        Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
+        Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
+
+        //when
+        Tag target = tags.get(0);
+        sut.addTag(target);
+
+        //then
+        assertThat(sut.getTags().size()).isEqualTo(10);
+        assertThat((int) sut.getTags().stream().filter(t -> t.equals(target)).count()).isEqualTo(1);
+    }
 
 }

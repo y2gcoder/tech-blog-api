@@ -47,7 +47,7 @@ class PostQueryServiceTest {
         }).collect(Collectors.toList());
         //postId 1 post에 태그 5개 태깅
         PostId postId = posts.get(0).getId();
-        taggerRepository.taggingPost(postId, tags);
+        taggerRepository.tagging(new Tagger(null, postId, tags));
     }
 
     @Test

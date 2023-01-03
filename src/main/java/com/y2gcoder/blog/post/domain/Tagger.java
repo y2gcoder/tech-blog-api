@@ -36,18 +36,28 @@ public class Tagger {
         return Collections.unmodifiableList(this.tags);
     }
 
-    public void addTag(Tag tag) {
-        if (ObjectUtils.isEmpty(tag)) {
-            throw new NullPointerException("tag is marked non-null but is null");
-        }
-        this.tags.add(tag);
-    }
-
     public void addTags(List<Tag> tags) {
         if (ObjectUtils.isEmpty(tags)) {
             throw new NullPointerException("tags is marked non-null but is null");
         }
-        this.tags.addAll(tags);
+        for (Tag tag : tags) {
+            addTag(tag);
+        }
+    }
+
+    public void addTag(Tag tag) {
+        if (ObjectUtils.isEmpty(tag)) {
+            throw new NullPointerException("tag is marked non-null but is null");
+        }
+        if (isNewTag(tag)) {
+            this.tags.add(tag);
+        }
+
+    }
+
+    private boolean isNewTag(Tag tag) {
+        return !tags.contains(tag) && tags.stream()
+                .noneMatch(t -> t.getName().equals(tag.getName()));
     }
 
     public void removeTag(Tag tag) {

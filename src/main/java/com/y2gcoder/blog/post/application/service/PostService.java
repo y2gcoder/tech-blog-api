@@ -2,6 +2,7 @@ package com.y2gcoder.blog.post.application.service;
 
 import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Tag;
+import com.y2gcoder.blog.post.domain.Tagger;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,8 @@ public class PostService {
 
         List<Tag> savedTags = tagRepository.saveAll(tagNames);
         Post post = postRepository.savePost(title, content, localDateTimeHolder.now());
-        taggerRepository.taggingPost(post.getId(), savedTags);
+        Tagger tagger = new Tagger(null, post.getId(), savedTags);
+        taggerRepository.tagging(tagger);
         return post.getId().getValue();
     }
 
