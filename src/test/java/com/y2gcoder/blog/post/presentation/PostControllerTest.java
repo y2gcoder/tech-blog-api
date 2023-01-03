@@ -61,6 +61,30 @@ class PostControllerTest {
     }
 
     @Test
+    @DisplayName("중복된_태그_이름_목록으로_요청하면_중복을_제거한다.")
+    void givenTagNamesDuplicated_whenWrite_thenDistinctTagNames() throws Exception {
+        //given
+        String title = "title";
+        String content = "content";
+        List<String> tagNames = Stream.iterate(1, n -> n + 1).limit(5).map(number -> "tag 1")
+                .collect(Collectors.toList());
+        PostWriteRequest postWriteRequest = new PostWriteRequest(title, content, tagNames);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(postWriteRequest);
+
+        //when
+        mockMvc.perform(
+                post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        ).andExpect(status().isCreated());
+
+        //then
+        then(postService).should().write(title, content, List.of("tag 1"));
+
+    }
+
+    @Test
     @DisplayName("빈_포스트_제목을_보내면_검증_실패한다.")
     void givenBlankTitle_whenWrite_thenInvalid() throws Exception {
         //given

@@ -28,9 +28,14 @@ public class PostController {
     ResponseEntity<Void> write(@Valid @RequestBody PostWriteRequest postWriteRequest) {
         String title = postWriteRequest.getTitle();
         String content = postWriteRequest.getContent();
-        List<String> tagNames = postWriteRequest.getTagNames();
+        List<String> tagNames = getDistinctTagNames(postWriteRequest);
         Long postId = postService.write(title, content, tagNames);
         return ResponseEntity.created(URI.create("/posts/"+postId)).build();
+    }
+
+    private static List<String> getDistinctTagNames(PostWriteRequest postWriteRequest) {
+        return postWriteRequest.getTagNames().stream().distinct().collect(
+                Collectors.toList());
     }
 
     @GetMapping("/{postId}")
