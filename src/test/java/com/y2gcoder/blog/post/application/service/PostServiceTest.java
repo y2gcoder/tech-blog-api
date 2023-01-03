@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,6 +82,50 @@ class PostServiceTest {
         assertThat(optionalTagger.isPresent()).isTrue();
         Tagger tagger = optionalTagger.get();
         assertThat(tagger.getTags().size()).isEqualTo(tags.size());
+
+    }
+
+    @Test
+    @DisplayName("이미_있는_태그와_함께_포스트를_저장할_수_있다.")
+    void given3TagsAlreadyInTheRepositoryAnd2NewTags_whenWrite_thenSuccess() {
+        //given
+        String title1 = "title1";
+        String content1 = "content1";
+        List<String> tagNames1 = new ArrayList<>();
+        for (int i = 1; i < 6; i++) {
+            tagNames1.add("tag " + i);
+        }
+        sut.write(title1, content1, tagNames1);
+
+        //when
+        String title2 = "title2";
+        String content2 = "content2";
+
+        List<String> tagNames2 = new ArrayList<>();
+        for (int i = 3; i < 8; i++) {
+            tagNames2.add("tag " + i);
+        }
+        Long savedPostId = sut.write(title2, content2, tagNames2);
+
+
+        //then
+        List<Post> posts = ((FakePostRepository) postRepository).getStore();
+        List<Tag> tags = ((FakeTagRepository) tagRepository).getStore();
+        List<Tagger> taggers = ((FakeTaggerRepository) taggerRepository).getStore();
+        assertThat(posts.size()).isEqualTo(2);
+
+        assertThat(tags.size()).isEqualTo(7);
+
+        Optional<Tagger> optionalTagger = taggers.stream()
+                .filter(tagger -> tagger.getPostId().getValue().equals(savedPostId))
+                .findAny();
+
+        assertThat(optionalTagger.isPresent()).isTrue();
+        Tagger tagger = optionalTagger.get();
+        List<Tag> taggerTags = tagger.getTags();
+        assertThat(taggerTags.size()).isEqualTo(5);
+        assertThat(taggerTags.stream().map(Tag::getName).collect(Collectors.toList())).containsAll(
+                tagNames2);
 
     }
 
