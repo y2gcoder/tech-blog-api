@@ -2,11 +2,11 @@ package com.y2gcoder.blog.post.infra.persistence;
 
 import com.y2gcoder.blog.post.application.service.PostQueryRepository;
 import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import com.y2gcoder.blog.post.domain.PostWithTags;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -34,7 +34,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     @Override
     public PostWithTags getById(PostId postId) {
         PostJpaEntity postJpaEntity = postJpaRepository.findById(postId.getValue())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(PostNotFoundException::new);
 
         return getPostWithTags(postJpaEntity);
     }

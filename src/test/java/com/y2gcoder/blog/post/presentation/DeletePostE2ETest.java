@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.y2gcoder.blog.post.application.service.PostQueryService;
 import com.y2gcoder.blog.post.application.service.PostService;
+import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.NestedServletException;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -38,8 +37,6 @@ public class DeletePostE2ETest {
 
     private List<Long> savedPostIds = new ArrayList<>();
 
-    private ObjectMapper objectMapper;
-
     @BeforeEach
     void beforeEach() {
         for (int i = 1; i < 4; i++) {
@@ -50,8 +47,6 @@ public class DeletePostE2ETest {
             Long savedPostId = postService.write(title, content, tagNames);
             savedPostIds.add(savedPostId);
         }
-
-        objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
     @Transactional
@@ -67,7 +62,7 @@ public class DeletePostE2ETest {
         //then
         resultActions.andExpect(status().isOk());
         assertThatThrownBy(() -> postQueryService.getByPostId(postId))
-                .isInstanceOf(JpaObjectRetrievalFailureException.class);
+                .isInstanceOf(PostNotFoundException.class);
 
     }
 
@@ -79,7 +74,8 @@ public class DeletePostE2ETest {
         Long postId = savedPostIds.get(2) + 1L;
 
         //when
-        assertThatThrownBy(() -> mockMvc.perform(delete("/posts/{postId}", postId)))
-                .isInstanceOf(NestedServletException.class);
+        mockMvc.perform(delete("/posts/{postId}", postId))
+                .andExpect(status().isBadRequest());
+
     }
 }

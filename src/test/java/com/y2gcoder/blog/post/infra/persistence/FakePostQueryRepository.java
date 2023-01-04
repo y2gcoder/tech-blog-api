@@ -3,14 +3,13 @@ package com.y2gcoder.blog.post.infra.persistence;
 import com.y2gcoder.blog.post.application.service.PostQueryRepository;
 import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import com.y2gcoder.blog.post.domain.PostWithTags;
 import com.y2gcoder.blog.post.domain.Tag;
 import com.y2gcoder.blog.post.domain.Tagger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 public class FakePostQueryRepository implements PostQueryRepository {
     private final List<Post> postStore;
@@ -37,8 +36,7 @@ public class FakePostQueryRepository implements PostQueryRepository {
 
     @Override
     public PostWithTags getById(PostId postId) {
-        Post post = findPostByPostId(postId).orElseThrow(
-                () -> new JpaObjectRetrievalFailureException(new EntityNotFoundException()));
+        Post post = findPostByPostId(postId).orElseThrow(PostNotFoundException::new);
         List<Tag> tags = getTagsByPostId(postId);
         return new PostWithTags(post.getId(), post.getTitle(), post.getContent(),
                 post.getWrittenAt(),

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.y2gcoder.blog.post.domain.Post;
+import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import com.y2gcoder.blog.post.domain.Tag;
 import com.y2gcoder.blog.post.domain.Tagger;
 import com.y2gcoder.blog.post.infra.persistence.FakePostRepository;
@@ -17,7 +18,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 class PostServiceTest {
 
@@ -143,7 +143,7 @@ class PostServiceTest {
         //when
         //then
         assertThatThrownBy(() -> sut.delete(savedPostId + 1L))
-                .isInstanceOf(JpaObjectRetrievalFailureException.class);
+                .isInstanceOf(PostNotFoundException.class);
 
     }
 

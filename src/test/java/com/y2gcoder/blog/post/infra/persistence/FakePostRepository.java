@@ -3,11 +3,10 @@ package com.y2gcoder.blog.post.infra.persistence;
 import com.y2gcoder.blog.post.application.service.PostRepository;
 import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 public class FakePostRepository implements PostRepository {
 
@@ -28,7 +27,7 @@ public class FakePostRepository implements PostRepository {
                 return post;
             }
         }
-        throw new JpaObjectRetrievalFailureException(new EntityNotFoundException());
+        throw new PostNotFoundException();
     }
 
     @Override

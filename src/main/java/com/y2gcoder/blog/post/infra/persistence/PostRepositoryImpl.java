@@ -3,8 +3,8 @@ package com.y2gcoder.blog.post.infra.persistence;
 import com.y2gcoder.blog.post.application.service.PostRepository;
 import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import java.time.LocalDateTime;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -26,14 +26,14 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public Post getById(PostId postId) {
         PostJpaEntity postJpaEntity = postJpaRepository.findById(postId.getValue())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(PostNotFoundException::new);
         return postMapper.mapToDomainEntity(postJpaEntity);
     }
 
     @Override
     public void deleteByPostId(PostId postId) {
         PostJpaEntity postJpaEntity = postJpaRepository.findById(postId.getValue())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(PostNotFoundException::new);
         postJpaRepository.delete(postJpaEntity);
     }
 }

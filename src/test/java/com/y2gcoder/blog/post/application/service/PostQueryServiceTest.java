@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Post.PostId;
+import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import com.y2gcoder.blog.post.domain.PostWithTags;
 import com.y2gcoder.blog.post.domain.Tag;
 import com.y2gcoder.blog.post.domain.Tagger;
@@ -19,7 +20,6 @@ import java.util.stream.LongStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 class PostQueryServiceTest {
 
@@ -80,7 +80,7 @@ class PostQueryServiceTest {
 
         //then
         assertThatThrownBy(() -> sut.getByPostId(wrongPostId))
-                .isInstanceOf(JpaObjectRetrievalFailureException.class);
+                .isInstanceOf(PostNotFoundException.class);
     }
 
 }
