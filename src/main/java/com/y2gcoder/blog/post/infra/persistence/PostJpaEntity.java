@@ -40,4 +40,18 @@ public class PostJpaEntity extends BaseTimeEntity {
         this.writtenAt = writtenAt;
     }
 
+    public PostJpaEntity(Long id, String title, String content, LocalDateTime writtenAt) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.writtenAt = writtenAt;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

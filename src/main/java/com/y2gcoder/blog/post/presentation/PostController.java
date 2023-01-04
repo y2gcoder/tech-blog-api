@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,13 +30,24 @@ public class PostController {
     ResponseEntity<Void> write(@Valid @RequestBody PostWriteRequest postWriteRequest) {
         String title = postWriteRequest.getTitle();
         String content = postWriteRequest.getContent();
-        List<String> tagNames = getDistinctTagNames(postWriteRequest);
+        List<String> tagNames = getDistinctTagNames(postWriteRequest.getTagNames());
         Long postId = postService.write(title, content, tagNames);
         return ResponseEntity.created(URI.create("/posts/"+postId)).build();
     }
 
-    private static List<String> getDistinctTagNames(PostWriteRequest postWriteRequest) {
-        return postWriteRequest.getTagNames().stream().distinct().collect(
+    @PutMapping("/{postId}")
+    ResponseEntity<Void> editPost(@PathVariable Long postId,
+            @Valid @RequestBody PostEditRequest postEditRequest) {
+        String title = postEditRequest.getTitle();
+        String content = postEditRequest.getContent();
+        List<String> tagNames = getDistinctTagNames(postEditRequest.getTagNames());
+
+        postService.edit(postId, title, content, tagNames);
+        return ResponseEntity.ok().build();
+    }
+
+    private static List<String> getDistinctTagNames(List<String> tagNames) {
+        return tagNames.stream().distinct().collect(
                 Collectors.toList());
     }
 

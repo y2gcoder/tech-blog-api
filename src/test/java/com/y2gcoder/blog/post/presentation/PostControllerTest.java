@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -155,6 +156,57 @@ class PostControllerTest {
         //then
         then(postService).should().write(title, content, new ArrayList<>());
 
+    }
+
+    @Test
+    @DisplayName("포스트의_제목과_내용을_수정할_수_있다.")
+    void givenNewTitleAndNewContent_whenEditPost_thenSuccess() throws Exception {
+        //given
+        Long postId = 1L;
+        String newTitle = "newTitle";
+        String newContent = "newContent";
+        List<String> tagNames = new ArrayList<>();
+        PostEditRequest postEditRequest = new PostEditRequest(newTitle, newContent, tagNames);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(postEditRequest);
+
+        //when
+        mockMvc.perform(
+                put("/posts/{postId}", postId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        ).andExpect(status().isOk());
+
+
+        //then
+        then(postService).should().edit(postId, newTitle, newContent, new ArrayList<>());
+    }
+
+    @Test
+    @DisplayName("포스트의_제목과_내용과_태그를_수정할_수_있다.")
+    void givenNewTitleAndNewContentAndTagNames_whenEditPost_thenSuccess() throws Exception {
+        //given
+        Long postId = 1L;
+        String newTitle = "newTitle";
+        String newContent = "newContent";
+        List<String> tagNames = new ArrayList<>();
+        for (int i = 4; i < 9; i++) {
+            tagNames.add("tag " + i);
+        }
+        PostEditRequest postEditRequest = new PostEditRequest(newTitle, newContent, tagNames);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(postEditRequest);
+
+        //when
+        mockMvc.perform(
+                put("/posts/{postId}", postId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        ).andExpect(status().isOk());
+
+
+        //then
+        then(postService).should().edit(postId, newTitle, newContent, tagNames);
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.util.ObjectUtils;
 
 public class FakePostRepository implements PostRepository {
 
@@ -34,6 +35,19 @@ public class FakePostRepository implements PostRepository {
     public void deleteByPostId(PostId postId) {
         Post post = getById(postId);
         this.store.remove(post);
+    }
+
+    @Override
+    public void updatePost(Post post) {
+        if (ObjectUtils.isEmpty(post.getId())) {
+            savePost(post.getTitle(), post.getContent(), post.getWrittenAt());
+            return;
+        }
+        for (Post p : store) {
+            if (p.getId().equals(post.getId())) {
+                p.edit(post.getTitle(), post.getContent());
+            }
+        }
     }
 
     public List<Post> getStore() {

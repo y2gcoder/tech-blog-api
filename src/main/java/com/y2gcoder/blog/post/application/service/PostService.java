@@ -40,4 +40,27 @@ public class PostService {
         taggerRepository.deleteByPostId(postId);
     }
 
+    public void edit(Long id, String title, String content, List<String> tagNames) {
+        PostId postId = new PostId(id);
+        Post post = updatePost(title, content, postId);
+        changeTags(tagNames, postId, post);
+    }
+
+    private Post updatePost(String title, String content, PostId postId) {
+        Post post = postRepository.getById(postId);
+        post.edit(title, content);
+        postRepository.updatePost(post);
+        return post;
+    }
+
+    private void changeTags(List<String> tagNames, PostId postId, Post post) {
+        taggerRepository.deleteByPostId(postId);
+        if (tagNames.isEmpty()) {
+            return;
+        }
+        List<Tag> savedTags = tagRepository.saveAll(tagNames);
+        Tagger tagger = new Tagger(post.getId(), savedTags);
+        taggerRepository.tagging(tagger);
+    }
+
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.y2gcoder.blog.post.domain.Post;
+import com.y2gcoder.blog.post.domain.Post.PostId;
 import com.y2gcoder.blog.post.domain.PostNotFoundException;
 import com.y2gcoder.blog.post.domain.Tag;
 import com.y2gcoder.blog.post.domain.Tagger;
@@ -195,6 +196,84 @@ class PostServiceTest {
         assertThat(afterTags.size()).isEqualTo(5);
         List<Tagger> afterTaggers = ((FakeTaggerRepository) taggerRepository).getStore();
         assertThat(afterTaggers).isEmpty();
+    }
+
+    @Test
+    @DisplayName("포스트의_타이틀과_제목을_수정할_수_있다.")
+    void givenChangedTitleAndContent_whenEdit_thenEdited() {
+        //given
+        String title = "title";
+        String content = "content";
+        List<String> tagNames = new ArrayList<>();
+        for (int i = 1; i < 6; i++) {
+            tagNames.add("tag " + i);
+        }
+        Long savedPostId = sut.write(title, content, tagNames);
+        List<Post> beforePosts = ((FakePostRepository) postRepository).getStore();
+        assertThat(beforePosts).isNotEmpty();
+        assertThat(beforePosts.get(0).getTitle()).isEqualTo(title);
+        assertThat(beforePosts.get(0).getContent()).isEqualTo(content);
+
+        //when
+        String newTitle = "newTitle";
+        String newContent = "newContent";
+        sut.edit(savedPostId, newTitle, newContent, tagNames);
+
+        //then
+        List<Post> afterPosts = ((FakePostRepository) postRepository).getStore();
+        Optional<Post> optionalPost = afterPosts.stream()
+                .filter(post -> post.getId().equals(new PostId(savedPostId))).findAny();
+        assertThat(optionalPost).isPresent();
+        Post result = optionalPost.get();
+        assertThat(result.getTitle()).isEqualTo(newTitle);
+        assertThat(result.getContent()).isEqualTo(newContent);
+
+        List<Tagger> afterTaggers = ((FakeTaggerRepository) taggerRepository).getStore();
+        Optional<Tagger> optionalTagger = afterTaggers.stream()
+                .filter(tagger -> tagger.getPostId().equals(new PostId(savedPostId)))
+                .findAny();
+        assertThat(optionalTagger).isPresent();
+        assertThat(optionalTagger.get().getTags().size()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("포스트의_태그를_수정할_수_있다.")
+    void givenChangedTags_whenEdit_thenEdited() {
+        //given
+        String title = "title";
+        String content = "content";
+        List<String> tagNames = new ArrayList<>();
+        for (int i = 1; i < 6; i++) {
+            tagNames.add("tag " + i);
+        }
+        Long savedPostId = sut.write(title, content, tagNames);
+        List<Post> beforePosts = ((FakePostRepository) postRepository).getStore();
+        assertThat(beforePosts).isNotEmpty();
+        List<Tag> beforeTags = ((FakeTagRepository) tagRepository).getStore();
+        assertThat(beforeTags.size()).isEqualTo(5);
+        List<Tagger> beforeTaggers = ((FakeTaggerRepository) taggerRepository).getStore();
+        assertThat(beforeTaggers).isNotEmpty();
+
+        //when
+        List<String> newTagNames = new ArrayList<>();
+        for (int i = 4; i < 9; i++) {
+            newTagNames.add("tag " + i);
+        }
+        sut.edit(savedPostId, title, content, newTagNames);
+
+        //then
+        List<Post> afterPosts = ((FakePostRepository) postRepository).getStore();
+        assertThat(afterPosts).isNotEmpty();
+        List<Tag> afterTags = ((FakeTagRepository) tagRepository).getStore();
+        assertThat(afterTags.size()).isEqualTo(8);
+        List<Tagger> afterTaggers = ((FakeTaggerRepository) taggerRepository).getStore();
+        Optional<Tagger> optionalTagger = afterTaggers.stream()
+                .filter(tagger -> tagger.getPostId().equals(new PostId(savedPostId)))
+                .findAny();
+        assertThat(optionalTagger).isPresent();
+        Tagger tagger = optionalTagger.get();
+        assertThat(tagger.getTags().stream().map(Tag::getName)
+                .collect(Collectors.toList())).containsAll(newTagNames);
     }
 
 }
