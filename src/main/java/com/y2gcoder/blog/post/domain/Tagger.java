@@ -1,6 +1,5 @@
 package com.y2gcoder.blog.post.domain;
 
-import com.y2gcoder.blog.common.domain.DomainId;
 import com.y2gcoder.blog.post.domain.Post.PostId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,14 +9,11 @@ import org.springframework.util.ObjectUtils;
 
 public class Tagger {
 
-    private final TaggerId id;
-
     private final PostId postId;
 
     private final List<Tag> tags;
 
-    public Tagger(TaggerId id, PostId postId, List<Tag> tags) {
-        this.id = id;
+    public Tagger(PostId postId, List<Tag> tags) {
         if (ObjectUtils.isEmpty(postId)) {
             throw new NullPointerException("PostId is marked non-null but is null");
         }
@@ -76,19 +72,11 @@ public class Tagger {
             return false;
         }
         Tagger tagger = (Tagger) o;
-        return Objects.equals(id, tagger.id);
+        return postId.equals(tagger.postId) && tags.equals(tagger.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(postId, tags);
     }
-
-    public static class TaggerId extends DomainId {
-
-        public TaggerId(Long value) {
-            super(value);
-        }
-    }
-
 }

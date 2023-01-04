@@ -1,6 +1,7 @@
 package com.y2gcoder.blog.post.infra.persistence;
 
 import com.y2gcoder.blog.post.application.service.TaggerRepository;
+import com.y2gcoder.blog.post.domain.Post.PostId;
 import com.y2gcoder.blog.post.domain.Tagger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,5 +21,10 @@ public class TaggerRepositoryImpl implements TaggerRepository {
                 .map(tag -> new PostTagJpaEntity(postIdValue, tag.getId().getValue())).collect(
                         Collectors.toList());
         postTagJpaRepository.saveAll(entities);
+    }
+
+    @Override
+    public void deleteByPostId(PostId postId) {
+        postTagJpaRepository.deleteAllByPostId(postId.getValue());
     }
 }

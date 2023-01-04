@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-import javax.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 class PostQueryServiceTest {
 
@@ -47,7 +47,7 @@ class PostQueryServiceTest {
         }).collect(Collectors.toList());
         //postId 1 post에 태그 5개 태깅
         PostId postId = posts.get(0).getId();
-        taggerRepository.tagging(new Tagger(null, postId, tags));
+        taggerRepository.tagging(new Tagger(postId, tags));
     }
 
     @Test
@@ -80,7 +80,7 @@ class PostQueryServiceTest {
 
         //then
         assertThatThrownBy(() -> sut.getByPostId(wrongPostId))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(JpaObjectRetrievalFailureException.class);
     }
 
 }

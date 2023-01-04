@@ -2,6 +2,7 @@ package com.y2gcoder.blog.post.presentation;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -194,6 +195,19 @@ class PostControllerTest {
                         get("/posts/{postId}", postId)
                 )
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("포스트를_삭제할_수_있다.")
+    void givenPostId_whenDeletePost_thenSuccess() throws Exception {
+        //given
+        //when
+        mockMvc.perform(
+                delete("/posts/{postId}", 1L)
+        ).andExpect(status().isOk());
+
+        //then
+        then(postService).should().delete(1L);
     }
 
 }

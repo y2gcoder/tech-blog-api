@@ -8,4 +8,6 @@ public interface PostTagJpaRepository extends JpaRepository<PostTagJpaEntity, Lo
 
     @Query("select pt.tagId from PostTagJpaEntity pt where pt.postId = :postId")
     List<Long> findTagIdsByPostId(Long postId);
+
+    void deleteAllByPostId(Long postId);
 }

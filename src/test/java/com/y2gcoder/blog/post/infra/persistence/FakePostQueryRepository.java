@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 public class FakePostQueryRepository implements PostQueryRepository {
     private final List<Post> postStore;
@@ -36,7 +37,8 @@ public class FakePostQueryRepository implements PostQueryRepository {
 
     @Override
     public PostWithTags getById(PostId postId) {
-        Post post = findPostByPostId(postId).orElseThrow(EntityNotFoundException::new);
+        Post post = findPostByPostId(postId).orElseThrow(
+                () -> new JpaObjectRetrievalFailureException(new EntityNotFoundException()));
         List<Tag> tags = getTagsByPostId(postId);
         return new PostWithTags(post.getId(), post.getTitle(), post.getContent(),
                 post.getWrittenAt(),

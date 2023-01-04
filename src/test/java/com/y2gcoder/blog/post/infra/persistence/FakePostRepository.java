@@ -6,6 +6,8 @@ import com.y2gcoder.blog.post.domain.Post.PostId;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityNotFoundException;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 public class FakePostRepository implements PostRepository {
 
@@ -17,6 +19,22 @@ public class FakePostRepository implements PostRepository {
         Post post = Post.of(new PostId(incrementId++), title, content, writtenAt);
         store.add(post);
         return post;
+    }
+
+    @Override
+    public Post getById(PostId postId) {
+        for (Post post : store) {
+            if (post.getId().equals(postId)) {
+                return post;
+            }
+        }
+        throw new JpaObjectRetrievalFailureException(new EntityNotFoundException());
+    }
+
+    @Override
+    public void deleteByPostId(PostId postId) {
+        Post post = getById(postId);
+        this.store.remove(post);
     }
 
     public List<Post> getStore() {

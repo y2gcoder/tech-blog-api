@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.y2gcoder.blog.post.domain.Post.PostId;
 import com.y2gcoder.blog.post.domain.Tag.TagId;
-import com.y2gcoder.blog.post.domain.Tagger.TaggerId;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ class TaggerTest {
         Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
 
         //when
-        Tagger sut = new Tagger(new TaggerId(1L), post.getId(), new ArrayList<>());
+        Tagger sut = new Tagger(post.getId(), new ArrayList<>());
         sut.addTag(tag1);
 
         //then
@@ -40,7 +39,7 @@ class TaggerTest {
         }
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
         Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
-        Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
+        Tagger sut = new Tagger(post.getId(), tags);
 
         //when
         Tag target = tags.get(3);
@@ -59,7 +58,7 @@ class TaggerTest {
         tags.add(new Tag(new TagId(1L), "tag 1"));
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
         Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
-        Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
+        Tagger sut = new Tagger(post.getId(), tags);
 
         //when
         List<Tag> addTags = new ArrayList<>();
@@ -83,7 +82,7 @@ class TaggerTest {
         }
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
         Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
-        Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
+        Tagger sut = new Tagger(post.getId(), tags);
 
         //when
         //then
@@ -102,7 +101,7 @@ class TaggerTest {
         }
         LocalDateTime writtenAt = LocalDateTime.of(2023, 1, 2, 23, 36, 15);
         Post post = Post.of(new PostId(1L), "title", "content", writtenAt);
-        Tagger sut = new Tagger(new TaggerId(1L), post.getId(), tags);
+        Tagger sut = new Tagger(post.getId(), tags);
 
         //when
         Tag target = tags.get(0);

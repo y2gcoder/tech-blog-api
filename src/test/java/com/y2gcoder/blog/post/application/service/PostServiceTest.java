@@ -1,6 +1,7 @@
 package com.y2gcoder.blog.post.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.y2gcoder.blog.post.domain.Post;
 import com.y2gcoder.blog.post.domain.Tag;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 class PostServiceTest {
 
@@ -127,6 +129,72 @@ class PostServiceTest {
         assertThat(taggerTags.stream().map(Tag::getName).collect(Collectors.toList())).containsAll(
                 tagNames2);
 
+    }
+
+    @Test
+    @DisplayName("존재하지_않는_포스트를_삭제할_수_없다.")
+    void givenInvalidPostId_whenDelete_thenThrowException() {
+        //given
+        String title = "title";
+        String content = "content";
+        List<String> tagNames = new ArrayList<>();
+        Long savedPostId = sut.write(title, content, tagNames);
+
+        //when
+        //then
+        assertThatThrownBy(() -> sut.delete(savedPostId + 1L))
+                .isInstanceOf(JpaObjectRetrievalFailureException.class);
+
+    }
+
+    @Test
+    @DisplayName("태그가_없는_포스트를_삭제할_수_있다.")
+    void givenPostWithoutTag_whenDelete_thenSuccess() {
+        //given
+        String title = "title";
+        String content = "content";
+        List<String> tagNames = new ArrayList<>();
+        Long savedPostId = sut.write(title, content, tagNames);
+        List<Post> before = ((FakePostRepository) postRepository).getStore();
+        assertThat(before).isNotEmpty();
+
+        //when
+        sut.delete(savedPostId);
+
+        //then
+        List<Post> after = ((FakePostRepository) postRepository).getStore();
+        assertThat(after).isEmpty();
+    }
+
+    @Test
+    @DisplayName("태그가_있는_포스트를_삭제할_수_있다.")
+    void givenPostWithTags_whenDelete_thenSuccess() {
+        //given
+        String title = "title";
+        String content = "content";
+        List<String> tagNames = new ArrayList<>();
+        for (int i = 1; i < 6; i++) {
+            tagNames.add("tag " + i);
+        }
+        Long savedPostId = sut.write(title, content, tagNames);
+
+        List<Post> beforePosts = ((FakePostRepository) postRepository).getStore();
+        assertThat(beforePosts).isNotEmpty();
+        List<Tag> beforeTags = ((FakeTagRepository) tagRepository).getStore();
+        assertThat(beforeTags.size()).isEqualTo(5);
+        List<Tagger> beforeTaggers = ((FakeTaggerRepository) taggerRepository).getStore();
+        assertThat(beforeTaggers).isNotEmpty();
+
+        //when
+        sut.delete(savedPostId);
+
+        //then
+        List<Post> afterPosts = ((FakePostRepository) postRepository).getStore();
+        assertThat(afterPosts).isEmpty();
+        List<Tag> afterTags = ((FakeTagRepository) tagRepository).getStore();
+        assertThat(afterTags.size()).isEqualTo(5);
+        List<Tagger> afterTaggers = ((FakeTaggerRepository) taggerRepository).getStore();
+        assertThat(afterTaggers).isEmpty();
     }
 
 }
